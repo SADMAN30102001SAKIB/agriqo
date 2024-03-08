@@ -148,7 +148,7 @@ function handleFormSubmit(event) {
     document.getElementById("btn1").value = "Loading - " + ++i + "s";
   }, 1000);
 
-  fetch("http://sadmansakib.pythonanywhere.com/cropRecomAI", {
+  fetch("https://agriqoserver-2.onrender.com/cropRecomAI", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -157,12 +157,15 @@ function handleFormSubmit(event) {
   })
     .then((response) => response.text())
     .then((receivedString) => {
-      show(JSON.parse(receivedString));
+      if (receivedString[0] == "[") {
+        show(JSON.parse(receivedString));
+      } else {
+        showModal(receivedString);
+      }
       clearInterval(intervalID);
       document.getElementById("btn1").value = "Get Crop (AI)";
     })
     .catch((error) => {
-      // console.error("Error:", error);
       showModal(error);
       clearInterval(intervalID);
       document.getElementById("btn1").value = "Get Crop (AI)";
@@ -223,7 +226,7 @@ function handleEnvironmentalFormSubmit(event) {
     document.getElementById("btn2").value = "Loading - " + ++i + "s";
   }, 1000);
 
-  fetch("http://sadmansakib.pythonanywhere.com/cropRecomCustom", {
+  fetch("https://agriqoserver-2.onrender.com/cropRecomCustom", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -232,12 +235,15 @@ function handleEnvironmentalFormSubmit(event) {
   })
     .then((response) => response.text())
     .then((receivedString) => {
-      show(JSON.parse(receivedString));
+      if (receivedString[0] == "[") {
+        show(JSON.parse(receivedString));
+      } else {
+        showModal(receivedString);
+      }
       clearInterval(intervalID);
       document.getElementById("btn2").value = "Get Crop";
     })
     .catch((error) => {
-      // console.error("Error:", error);
       showModal(error);
       clearInterval(intervalID);
       document.getElementById("btn2").value = "Get Crop";
@@ -271,7 +277,7 @@ function handleFormSubmit2(event) {
     document.getElementById("btn1").value = "Loading - " + ++i + "s";
   }, 1000);
 
-  fetch("http://127.0.0.1:5000/timeRecomAI", {
+  fetch("https://agriqoserver-2.onrender.com/timeRecomAI", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -305,7 +311,7 @@ function handleFormSubmit3(event) {
     crop: crop,
   };
 
-  fetch("#", {
+  fetch("https://agriqoserver-2.onrender.com/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -314,7 +320,7 @@ function handleFormSubmit3(event) {
   })
     .then((response) => response.text())
     .then((receivedString) => {
-      show(JSON.parse(receivedString));
+      showModal(receivedString);
     })
     .catch((error) => {
       showModal(error);
@@ -342,7 +348,7 @@ function handleFormSubmit4(event) {
     crop: crop,
   };
 
-  fetch("#", {
+  fetch("https://agriqoserver-2.onrender.com/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -351,7 +357,7 @@ function handleFormSubmit4(event) {
   })
     .then((response) => response.text())
     .then((receivedString) => {
-      show(JSON.parse(receivedString));
+      showModal(receivedString);
     })
     .catch((error) => {
       showModal(error);
