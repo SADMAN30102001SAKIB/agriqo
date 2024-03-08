@@ -5,6 +5,8 @@ import requests
 from flask import Flask, request
 from flask_cors import CORS
 from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 
 app = Flask(__name__)
@@ -26,6 +28,73 @@ sun_shine_hour = [
     [6.4, 7.8, 7.9, 7.8, 7.1, 5.5, 4.8, 5.6, 5, 7.1, 8.2, 6.8],
     [7, 8.1, 8.3, 8.8, 8.1, 5.5, 4.3, 4.7, 5, 6.8, 7.7, 7.9],
 ]
+
+
+def bengali_converter(pre):
+    pre_int = int(pre) - 1
+    pre_float = pre - pre_int
+    bangla_list = [
+        ["Poush", "Magh"],
+        ["Magh", "Falgun"],
+        ["Falgun", "chaitra"],
+        ["chaitro", "Boisakh"],
+        ["Boisakh", "Joistho"],
+        ["Joistho", "Ashar"],
+        ["Ashar", "shraban"],
+        ["shraban", "bhadro"],
+        ["bhadro", "ashwin"],
+        ["ashwin", "kartik"],
+        ["kartik", "agrahayan"],
+        ["agrahayan", "Poush"],
+    ]
+    bangla_month_list = bangla_list[pre_int]
+    if pre_float > 0.5:
+        bangla_month = bangla_month_list[1]
+        if pre_float > 0.75:
+            bangla_week = 2
+        else:
+            bangla_week = 1
+    else:
+        bangla_month = bangla_month_list[0]
+        if pre_float > 0.25:
+            bangla_week = 2
+        else:
+            bangla_week = 1
+    return bangla_month, bangla_week
+
+
+def get_month_and_week(number):
+    number_int = int(number) - 1
+    number_float = number - number_int
+    if number_float > 0.5:
+        if number_float > 0.75:
+            week = 4
+        else:
+            week = 3
+    else:
+        if number_float > 0.25:
+            week = 2
+        else:
+            week = 1
+    return number_int, week
+
+
+def model2(inputs, outputs, input_list):
+    INFO = "C:\\Users\\Asus\\Desktop\\Resources\\Code\\Dev\\Kefaet\\signin-signup\\Agriqo(slider2).csv"
+    data = pd.read_csv(INFO)
+
+    data_without_duplicates = data.drop_duplicates()
+
+    model = LinearRegression()
+    model.fit(data_without_duplicates[inputs], data_without_duplicates[outputs])
+    predicted_values = model.predict(data_without_duplicates[inputs])
+    mse = mean_squared_error(data_without_duplicates[outputs], predicted_values)
+    pre = model.predict([input_list])
+    pre = pre[0][0]
+    bangla_month, bangla_week = bengali_converter(pre)
+    english_month, eng_week = get_month_and_week(pre)
+
+    return pre, bangla_month, bangla_week, english_month, eng_week
 
 
 def weather_api(agricultural_zone, city):
@@ -227,9 +296,34 @@ def handle_data_custom():
     return ai(inputs, manual_input)
 
 
-@app.route("/timeRecomAI")
+@app.route("/timeRecomAI", methods=["POST"])
 def handle_data_time():
-    return "Hello"
+    data = request.json
+
+    input_list = [data["zone"], data["crop"]]
+    months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ]
+    pre, bangla_month, bangla_week, english_month, eng_week = model2(
+        ["Agricultural zone", "label count"], ["month(chara)"], input_list
+    )
+
+    string = f"week {eng_week} of {months[english_month]}<br/>week {bangla_week} of {bangla_month}"
+
+    print(string)
+
+    return string
 
 
 @app.route("/")

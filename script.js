@@ -261,12 +261,6 @@ function handleFormSubmit2(event) {
   var selectedZone = zoneSelect.selectedIndex;
   var crop = cropSelect.selectedIndex;
 
-  if (selectedDistrict == "Bagerhat") {
-    selectedDistrict = "Sylhet";
-  } else if (selectedDistrict == "Bagerhat") {
-    selectedDistrict = "Khulna";
-  }
-
   var dataToSend = {
     zone: selectedZone,
     crop: crop,
@@ -286,14 +280,14 @@ function handleFormSubmit2(event) {
   })
     .then((response) => response.text())
     .then((receivedString) => {
-      showModal(JSON.parse(receivedString));
+      showModal(receivedString);
       clearInterval(intervalID);
-      document.getElementById("btn2").value = "Get Crop";
+      document.getElementById("btn1").value = "Get Crop";
     })
     .catch((error) => {
       showModal(error);
       clearInterval(intervalID);
-      document.getElementById("btn2").value = "Get Crop";
+      document.getElementById("btn1").value = "Get Crop";
     });
 }
 
